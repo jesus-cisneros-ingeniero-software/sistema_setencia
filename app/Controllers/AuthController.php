@@ -8,29 +8,6 @@ use CodeIgniter\Controller;
 
 class AuthController extends Controller
 {
-  public function login()
-  {
-    return view('auth/login');
-  }
-
-  public function validateUser()
-  {
-    $model = new UsuarioModel();
-
-    $username = $this->request->getPost('StrUsuario');
-    $password = $this->request->getPost('StrPassword');
-
-    $user = $model->where('StrUsuario', $username)->first();
-
-    if ($user && password_verify($password, $user['StrPassword'])) {
-      // Iniciar sesión, guardar datos en sesión
-      session()->set(['StrUsuario' => $user['StrUsuario']]);
-      return redirect()->to('/dashboard');
-    } else {
-      return redirect()->back()->with('error', 'Usuario o contraseña incorrectos');
-    }
-  }
-
 
   public function register()
   {

@@ -34,3 +34,18 @@ $routes->get('/producto/editar/(:num)/', 'Producto::editar/$1');
 $routes->post('/producto/actualizar', 'Producto::actualizar');
 $routes->get('/producto/borrar/(:num)', 'Producto::eliminar/$1');
 */
+
+$routes->get('/setencia', 'Producto::index');
+$routes->get('/sentencias/crear', 'Setencia::mostrar');
+$routes->post('/setencia/traer', 'Setencia::traer');
+$routes->get('/setencia/editar/(:num)/', 'Setencia::editar/$1');
+$routes->post('/setencia/actualizar', 'Setencia::actualizar');
+$routes->get('/setencia/borrar/(:num)', 'Setencia::eliminar/$1');
+
+
+$routes->post('/auth/createSetencia', 'Setencia::createSetencia');
+
+
+$routes->get('/sentencias', 'SentenciasController::index');
+$routes->post('/sentencias/save', 'SentenciasController::save');
+$routes->get('/sentencias/agregar', 'SentenciasController::agregar');
