@@ -49,3 +49,5 @@ $routes->post('/auth/createSetencia', 'Setencia::createSetencia');
 $routes->get('/sentencias', 'SentenciasController::index');
 $routes->post('/sentencias/save', 'SentenciasController::save');
 $routes->get('/sentencias/agregar', 'SentenciasController::agregar');
+
+$routes->post('/login', 'AuthController::login');

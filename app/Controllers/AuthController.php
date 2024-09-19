@@ -40,7 +40,7 @@ class AuthController extends Controller
     ];
 
     $model->insert($data);
-    return redirect()->to('/login');
+    return redirect()->to('/');
   }
 
 
