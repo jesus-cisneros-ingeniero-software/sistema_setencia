@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agregar Sentencia</title>
+  <link rel="stylesheet" href="<?= base_url('/assets/css/estilo.css') ?>">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 
@@ -12,6 +13,7 @@
   <div class="container">
     <h1>Agregar Nueva Sentencia</h1>
     <form action="<?= base_url('sentencias/save'); ?>" method="POST">
+
       <div class="form-group">
         <label for="NumExpediente">Número de Expediente:</label>
         <input type="text" name="NumExpediente" class="form-control" required>
@@ -31,6 +33,7 @@
           <?php endforeach; ?>
         </select>
       </div>
+
       <div class="form-group">
         <label for="nuevo_juzgador">Agregar nuevo Juzgador (si no está en la lista):</label>
         <input type="text" name="StrNombre" id="nuevo_juzgador" class="form-control" placeholder="Nombre del nuevo juzgador">
@@ -40,10 +43,17 @@
 
 
 
+      <!-- Campo para agregar nueva sentencia si no está en la lista -->
+      <div class="form-group">
+        <label for="StrDescripcion">Agregar nueva Sentencia (si no está en la lista):</label>
+        <input type="text" name="StrDescripcion" id="StrDescripcion" class="form-control" placeholder="Descripción de la nueva sentencia">
+      </div>
+
       <div class="form-group">
         <label for="LITIS">LITIS:</label>
         <textarea name="LITIS" class="form-control"></textarea>
       </div>
+
       <div class="form-group">
         <button type="submit" class="btn btn-primary">Guardar Sentencia</button>
       </div>

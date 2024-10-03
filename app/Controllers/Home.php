@@ -33,7 +33,7 @@ class Home extends BaseController
                     'nombre_usuario' => $buscar->StrUsuario,
                     'perfil_usuario' => $buscar->fkPerfil,
                 ]);
-                return redirect()->to('/Admin');
+                return redirect()->to('/sentencias/agregar');
             } else {
                 return redirect()->to(base_url('/'))->with('error', 'Contraseña incorrecta');
             }

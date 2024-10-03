@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SETENCIAS</title>
-  <!--<link rel="stylesheet" href="<?= base_url('css/estilo.css') ?>">-->
+  <link rel="stylesheet" href="<?= base_url('/assets/css/estilo.css') ?>">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
@@ -19,7 +19,7 @@
           <div class="card shadow-2-strong" style="border-radius: 1rem;">
             <div class="card-body p-5 text-center">
 
-              <h3 class="mb-5">SISTEMA DE SETENCIA </h3>
+              <h3 class="mb-5">SISTEMA DE SENTENCIA </h3>
               <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert alert-danger">
                   <?= session()->getFlashdata('error') ?>

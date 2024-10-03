@@ -19,6 +19,8 @@ class SentenciasModel extends Model
     'DtmFecha_Creacion',
     'DtmFechaCambioTime',
     'DtmFechaBajaTime',
-    'Is_Activo'
+    'Is_Activo',
+    'strEntFedId',
+    'idSentencia'
   ];
 }

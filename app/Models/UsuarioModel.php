@@ -9,14 +9,16 @@ class UsuarioModel extends Model
   protected $table = 'usuario';
   protected $id = 'idUsuario';
   protected $allowedFields = [
-    'StrUsuario',
     'fkPerfil',
+    'StrUsuario',
     'StrPassword',
     'StrNombre',
     'StrApellidoPaterno',
     'StrApellidoMaterno',
     'is_activo',
-    'Dtmfecha_creacion'
+    'DtmFecha_Creacion',
+    'DtmFechaCambioTime',
+    'DtmFechaBajaTime'
   ];
 
   protected $returnType = 'object';

@@ -27,10 +27,11 @@ class SentenciasController extends Controller
   public function agregar()
   {
     $juzgadorModel = new JuzgadorModel();
+    $sentenciasModel = new SentenciasModel(); // Añadir esto para obtener las sentencias
+    $data['sentencias'] = $sentenciasModel->where('Is_Activo', 1)->findAll();
     $data['juzgadores'] = $juzgadorModel->where('Is_Activo', 1)->findAll();
     return view('sentencias/new', $data);
   }
-
 
   public function save()
   {
@@ -70,11 +71,80 @@ class SentenciasController extends Controller
       'StrCaracteristicasEspeciales' => $this->request->getPost('StrCaracteristicasEspeciales'),
       'LITIS' => $this->request->getPost('LITIS'),
       'DtmFecha_Creacion' => date('Y-m-d H:i:s'),
-      'Is_Activo' => 1
+      'Is_Activo' => 1,
+      'strEntFedId' => $this->request->getPost('strEntradaFedId')
     ];
 
     $sentenciasModel->save($sentenciaData);
 
     return redirect()->to('/sentencias');
+  }
+
+
+  public function search()
+  {
+    $sentenciasModel = new SentenciasModel();
+    $juzgadorModel = new JuzgadorModel();
+
+    $NumExpediente = $this->request->getPost('NumExpediente');
+    $NumAno = $this->request->getPost('NumAno');
+    $Juzgador_idJuzgador = $this->request->getPost('Juzgador_idJuzgador');
+
+    // Filtros de búsqueda
+    $query = $sentenciasModel->where('Is_Activo', 1);
+
+    if (!empty($NumExpediente)) {
+      $query->like('NumExpediente', $NumExpediente);
+    }
+
+    if (!empty($NumAno)) {
+      $query->where('NumAno', $NumAno);
+    }
+
+    if (!empty($Juzgador_idJuzgador)) {
+      $query->where('Juzgador_idJuzgador', $Juzgador_idJuzgador);
+    }
+
+    $data['resultados'] = $query->findAll();
+    $data['juzgadores'] = $juzgadorModel->where('Is_Activo', 1)->findAll();
+
+    return view('sentencias/index', $data);
+  }
+  public function advancedSearch()
+  {
+    $sentenciasModel = new SentenciasModel();
+    $juzgadorModel = new JuzgadorModel();
+
+    // Capturar parámetros de búsqueda avanzada
+    $NumExpediente = $this->request->getPost('NumExpediente');
+    $NumAno = $this->request->getPost('NumAno');
+    $Juzgador_idJuzgador = $this->request->getPost('Juzgador_idJuzgador');
+    $StrCaracteristicasEspeciales = $this->request->getPost('StrCaracteristicasEspeciales');
+
+    // Construir la consulta avanzada
+    $query = $sentenciasModel->where('Is_Activo', 1);
+
+    if (!empty($NumExpediente)) {
+      $query->like('NumExpediente', $NumExpediente);
+    }
+
+    if (!empty($NumAno)) {
+      $query->where('NumAno', $NumAno);
+    }
+
+    if (!empty($Juzgador_idJuzgador)) {
+      $query->where('Juzgador_idJuzgador', $Juzgador_idJuzgador);
+    }
+
+    if (!empty($StrCaracteristicasEspeciales)) {
+      $query->like('StrCaracteristicasEspeciales', $StrCaracteristicasEspeciales);
+    }
+
+    // Obtener los resultados
+    $data['resultados'] = $query->findAll();
+    $data['juzgadores'] = $juzgadorModel->where('Is_Activo', 1)->findAll();
+
+    // Cargar la vista con los resultados de la búsqueda avanzada
+    return view('sentencias/advanced_search', $data);
   }
 }

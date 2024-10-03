@@ -24,6 +24,26 @@ class Database extends Config
      *
      * @var array<string, mixed>
      */
+    public array $sqlsrv = [
+        'DSN'        => '',
+        'hostname'   => '10.3.12.116',
+        'username'   => 'sipro',
+        'password'   => 'sipro.24',
+        'database'   => 'DB_SIPRODET',
+        'DBDriver'   => 'pdo_sqlsrv',
+        'DBPrefix'   => '',
+        'pConnect'   => false,
+        'DBDebug'    => true,
+        'charset'    => 'utf8',
+        'DBCollat'   => 'utf8_general_ci',
+        'swapPre'    => '',
+        'encrypt'    => false,
+        'compress'   => false,
+        'strictOn'   => false,
+        'failover'   => [],
+        'port'       => 1433,
+    ];
+
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',

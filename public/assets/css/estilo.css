@@ -1,6 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@font-face {
+    font-family: 'Geomanist';
+    src: url('../fonts/Geomanist-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Geomanist', sans-serif;
+}
+
 *{
-  font-family: "Montserrat", sans-serif;
+  font-family: "Geomanist", sans-serif;
   font-size: 24px;
   font-style: normal;
 }
