@@ -30,7 +30,23 @@ class SentenciasController extends Controller
     $sentenciasModel = new SentenciasModel(); // Añadir esto para obtener las sentencias
     $data['sentencias'] = $sentenciasModel->where('Is_Activo', 1)->findAll();
     $data['juzgadores'] = $juzgadorModel->where('Is_Activo', 1)->findAll();
+    // Aquí debes cargar las entidades antes de pasar los datos a la vista
+    $db = \Config\Database::connect('sqlsrv');
+    $sql = "EXEC uspEntidad @intOperacion = ?";
+    $query = $db->query($sql, [1]);
+
+    $entidades = $query->getResult();
+
+    // Asegúrate de pasar la variable entidades a la vista
+    $data['entidades'] = $entidades;
+    $data['juzgadores'] = $this->getJuzgadoresActivos(); // Supongamos que esta es una función que obtiene los juzgadores activos
     return view('sentencias/new', $data);
+  }
+  private function getJuzgadoresActivos()
+  {
+    // Ejemplo para obtener los juzgadores activos
+    $juzgadorModel = new \App\Models\JuzgadorModel();
+    return $juzgadorModel->where('Is_Activo', 1)->findAll();
   }
 
   public function save()
@@ -72,7 +88,7 @@ class SentenciasController extends Controller
       'LITIS' => $this->request->getPost('LITIS'),
       'DtmFecha_Creacion' => date('Y-m-d H:i:s'),
       'Is_Activo' => 1,
-      'strEntFedId' => $this->request->getPost('strEntradaFedId')
+      'idEntidadFederativa' => $this->request->getPost('entidad_id')
     ];
 
     $sentenciasModel->save($sentenciaData);

@@ -12,7 +12,18 @@
 <body>
   <div class="container">
     <h1>Agregar Nueva Sentencia</h1>
-    <form action="<?= base_url('sentencias/save'); ?>" method="POST">
+
+    <form action="<?= base_url('sentencias/save'); ?>" method="POST"> <!-- Acción corregida -->
+      <?php if (!empty($entidades)): ?>
+        <label for="entidad_id">Entidades:</label>
+        <select name="entidad_id" id="entidad_id">
+          <?php foreach ($entidades as $entidad): ?>
+            <option value="<?= $entidad->strEntFedId; ?>"><?= $entidad->strEntidad; ?></option>
+          <?php endforeach; ?>
+        </select>
+      <?php else: ?>
+        <p>No se encontraron entidades.</p>
+      <?php endif; ?>
 
       <div class="form-group">
         <label for="NumExpediente">Número de Expediente:</label>
@@ -41,8 +52,6 @@
         <input type="text" name="StrApellidoMaterno" id="nuevo_juzgador_apellidoM" class="form-control" placeholder="Apellido Materno">
       </div>
 
-
-
       <!-- Campo para agregar nueva sentencia si no está en la lista -->
       <div class="form-group">
         <label for="StrDescripcion">Agregar nueva Sentencia (si no está en la lista):</label>
@@ -57,8 +66,7 @@
       <div class="form-group">
         <button type="submit" class="btn btn-primary">Guardar Sentencia</button>
       </div>
-
-    </form>
+    </form> <!-- Cierre del formulario -->
   </div>
 </body>
 

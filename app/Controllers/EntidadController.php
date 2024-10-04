@@ -19,6 +19,6 @@ class EntidadController extends BaseController
     $result = $query->getResult();
 
     // Pasar los resultados a la vista
-    return view('entidad_view', ['entidades' => $result]);
+    return view('sentencias/new', ['entidades' => $result]);
   }
 }
