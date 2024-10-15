@@ -21,6 +21,6 @@ class SentenciasModel extends Model
     'DtmFechaBajaTime',
     'Is_Activo',
     'strEntFedId',
-    'idSentencia'
+    'entidad_id'
   ];
 }

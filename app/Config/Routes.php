@@ -63,7 +63,9 @@ $routes->get('/sentencias', 'SentenciasController::index');
 $routes->get('sentencias', 'SentenciasController::index');  // Página para listar y buscar sentencias
 
 $routes->get('sentencias/agregar', 'SentenciasController::agregar');  // Formulario para agregar nueva sentencia
-$routes->post('sentencias/save', 'SentenciasController::save');  // Acción para guardar una nueva sentencia
+$routes->post('sentencias/save', 'SentenciasController::save');
+  // Acción para guardar una nueva sentencia
+
 
 $routes->post('sentencias/search', 'SentenciasController::search');  // Acción para buscar sentencias
 

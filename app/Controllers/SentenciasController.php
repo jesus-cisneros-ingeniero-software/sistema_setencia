@@ -55,20 +55,40 @@ class SentenciasController extends Controller
     $juzgadorModel = new JuzgadorModel();
     $usuarioModel = new UsuarioModel();
 
+    // Obtener los datos del formulario
     $juzgadorId = $this->request->getPost('Juzgador_idJuzgador');
     $juzgadorNombre = $this->request->getPost('StrNombre');
+    $juzgadorApellidoPaterno = $this->request->getPost('StrApellidoPaterno');
+    $juzgadorApellidoMaterno = $this->request->getPost('StrApellidoMaterno');
+    $entidad_id = $this->request->getPost('entidad_id');
+
+    // Depurar los valores recibidos del formulario
+    dd([
+      'entidad_id' => $entidad_id,
+      'Juzgador_idJuzgador' => $juzgadorId,
+      
+      
+      // Agrega otros campos si lo consideras necesario
+    ]);
+
+
     //$fkUsuario_idUsuario = $this->request->getPost('StrUsuario');
     //StrUsuario
     // Verifica si el juzgador existe
     if ($juzgadorNombre && !$juzgadorId) {
-      $juzgadorExistente = $juzgadorModel->where('StrNombre', $juzgadorNombre)->first();
+      $juzgadorExistente = $juzgadorModel->where([
+          'StrNombre' => $juzgadorNombre,
+          'StrApellidoPaterno' => $juzgadorApellidoPaterno,
+          'StrApellidoMaterno' => $juzgadorApellidoMaterno
+      ])->first();
+
 
       // Si no existe, crearlo
       if (!$juzgadorExistente) {
         $juzgadorData = [
           'StrNombre' => $this->request->getPost('StrNombre'),
-          'StrApellidoPaterno' => $this->request->getPost('StrApellidoPaterno'),
-          'StrApellidoMaterno' => $this->request->getPost('StrApellidoMaterno'),
+          'StrApellidoPaterno' => $juzgadorApellidoPaterno,
+          'StrApellidoMaterno' => $juzgadorApellidoMaterno,
           'Is_Activo' => 1
         ];
         $juzgadorId = $juzgadorModel->insert($juzgadorData);
@@ -78,6 +98,15 @@ class SentenciasController extends Controller
     }
 
     // Guardar la sentencia
+    /*
+    if ($sentenciasModel->save($sentenciaData) === false) {
+      // Mostrar los errores de la operación de guardado
+      $errors = $sentenciasModel->errors();
+      dd($errors); // Esto te mostrará los errores y detendrá la ejecución
+    }
+      */
+
+    //Datos de la nueva setencia
     $sentenciaData = [
       'fkUsuario_idUsuario' => 1,
       'Juzgador_idJuzgador' => $juzgadorId,
@@ -88,14 +117,20 @@ class SentenciasController extends Controller
       'LITIS' => $this->request->getPost('LITIS'),
       'DtmFecha_Creacion' => date('Y-m-d H:i:s'),
       'Is_Activo' => 1,
-      'idEntidadFederativa' => $this->request->getPost('entidad_id')
+      'entidad_id' => $this->request->getPost('entidad_id'),
+
     ];
 
-    $sentenciasModel->save($sentenciaData);
-
-    return redirect()->to('/sentencias');
+     // Guardar la sentencia en la base de datos
+     if ($sentenciasModel->save($sentenciaData)) {
+      return redirect()->to('/sentencias');
+  } else {
+      // Mostrar errores si falla el guardado
+      return redirect()->back()->withInput()->with('errors', $sentenciasModel->errors());
+  }
   }
 
+  
 
   public function search()
   {
