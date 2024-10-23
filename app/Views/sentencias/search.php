@@ -8,7 +8,7 @@
   <title>Búsqueda</title>
 </head>
 
-<body>
+<body background="<?= base_url('/assets/img/fondoprop.png')?>">
   <h2>Búsqueda Básica</h2>
   <form method="post" action="<?= base_url('sentencias/search'); ?>">
     <div class="form-group">

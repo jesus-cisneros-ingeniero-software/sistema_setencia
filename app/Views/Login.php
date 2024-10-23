@@ -12,7 +12,7 @@
 
 </head>
 
-<body>
+<body background="<?= base_url('/assets/img/fondoprop.png') ?>">
   <section class="vh-100" style="background-color:rgba(145,145,145,255);">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -41,13 +41,8 @@
 
                 <br>
                 <br>
-                <button class="btn btn-primary"> INGRESAR</button>
+                <button class="boton"> INGRESAR</button>
               </form>
-              <hr>
-
-              <a href="<?= base_url('/register') ?>">¿No tienes cuenta? Registrate</a>
-
-
             </div>
           </div>
         </div>
@@ -55,9 +50,9 @@
     </div>
   </section>
 </body>
-<!--
+
 <footer class="vh-100" style="background-color:rgba(145,145,145,255);">
-  <p>Desarrollado Cisneros Cantero Jeús Arturo ext 44562</p>
+  <p>Desarrollado Cisneros Cantero Jesús Arturo ext 44562</p>
   <p>Revisado por Damian Martinez Magliocca ext 44560</p>
 
 </footer>

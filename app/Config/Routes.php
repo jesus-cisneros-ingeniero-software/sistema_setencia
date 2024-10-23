@@ -66,6 +66,7 @@ $routes->get('sentencias/agregar', 'SentenciasController::agregar');  // Formula
 $routes->post('sentencias/save', 'SentenciasController::save');
   // Acción para guardar una nueva sentencia
 
+$routes->post('sentencias/saveJuzgador', 'SentenciasController::saveJuzgador');
 
 $routes->post('sentencias/search', 'SentenciasController::search');  // Acción para buscar sentencias
 

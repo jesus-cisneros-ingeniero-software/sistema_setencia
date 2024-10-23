@@ -63,6 +63,7 @@ class SentenciasController extends Controller
     $entidad_id = $this->request->getPost('entidad_id');
 
     // Depurar los valores recibidos del formulario
+    /*
     dd([
       'entidad_id' => $entidad_id,
       'Juzgador_idJuzgador' => $juzgadorId,
@@ -70,6 +71,7 @@ class SentenciasController extends Controller
       
       // Agrega otros campos si lo consideras necesario
     ]);
+    */
 
 
     //$fkUsuario_idUsuario = $this->request->getPost('StrUsuario');
@@ -129,6 +131,25 @@ class SentenciasController extends Controller
       return redirect()->back()->withInput()->with('errors', $sentenciasModel->errors());
   }
   }
+
+  public function saveJuzgador()
+{
+    $juzgadorModel = new \App\Models\JuzgadorModel();
+    $data = [
+        'StrNombre' => $this->request->getPost('StrNombre'),
+        'StrApellidoPaterno' => $this->request->getPost('StrApellidoPaterno'),
+        'StrApellidoMaterno' => $this->request->getPost('StrApellidoMaterno'),
+        'Is_Activo' => 1
+    ];
+
+    if ($juzgadorModel->insert($data)) {
+        // Redirigir de vuelta al formulario de sentencias con el juzgador recién agregado
+        return redirect()->to(base_url('sentencias/agregar'))->with('message', 'Juzgador guardado con éxito');
+    } else {
+        // Manejar el error en caso de que el juzgador no se haya guardado
+        return redirect()->back()->withInput()->with('error', 'Error al guardar el juzgador');
+    }
+}
 
   
 
