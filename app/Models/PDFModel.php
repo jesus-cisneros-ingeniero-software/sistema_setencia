@@ -8,5 +8,9 @@ class PDFModel extends Model
 {
   protected $table = 'pdfs';
   protected $primaryKey = 'idpdfs';
-  protected $allowedFields = ['file_name', 'file_path', 'created_at'];
+  protected $allowedFields = [
+      'file_name',
+      'file_path',
+      'created_at',
+      'id_sentencia'];
 }

@@ -19,6 +19,10 @@ $routes->post('/auth/validateUser', 'AuthController::validateUser');
 
 $routes->post('/auth/createUser', 'AuthController::createUser');
 
+$routes->get('sentencias/advancedSearch', 'SentenciasController::advancedSearch'); // Ruta para mostrar el formulario de búsqueda avanzada
+$routes->post('sentencias/performAdvancedSearch', 'SentenciasController::performAdvancedSearch'); // Ruta para manejar la búsqueda avanzada
+$routes->get('sentencias/results', 'SentenciasController::results'); // Ruta para mostrar los resultados
+
 
 
 $routes->get('/pdfs', 'PDFController::index'); // Ruta para listar los archivos
@@ -78,3 +82,13 @@ $routes->get('sentencias/advancedSearch', 'SentenciasController::advancedSearch'
 $routes->post('sentencias/advancedSearch', 'SentenciasController::advancedSearch');  // Procesa la búsqueda avanzada
 
 $routes->get('/consultarentidad', 'EntidadController::consultarEntidad');
+
+
+$routes->get('/pdfs/view/(:segment)', 'PDFController::view/$1');
+
+
+
+
+
+$routes->get('pdf/(:segment)', 'SentenciasController::verPDF/$1');
+$routes->get('pdf/(:any)', 'SentenciasController::verPdffinal/$1');

@@ -15,7 +15,7 @@ class PDFController extends Controller
 
 
     // Obtener todos los archivos almacenados en la base de datos
-    $data['files'] = $model->findAll();
+    $data['files'] = $model->orderBy('created_at','DESC')->findAll();
 
     // Pasar los datos a la vista
     return view('pdfs/list', $data);
@@ -73,4 +73,15 @@ class PDFController extends Controller
       return redirect()->back()->with('error', 'Error al subir el archivo');
     }
   }
+    public function view($fileName)
+    {
+        $filePath = WRITEPATH . 'uploads/' . $fileName;
+
+        if (file_exists($filePath)) {
+            return $this->response->setHeader('Content-Type', 'application/pdf')
+                ->setBody(file_get_contents($filePath));
+        } else {
+            return redirect()->back()->with('error', 'El archivo no existe.');
+        }
+    }
 }

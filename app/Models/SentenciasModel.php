@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use CodeIgniter\Model;
 
 class SentenciasModel extends Model
@@ -21,6 +19,18 @@ class SentenciasModel extends Model
     'DtmFechaBajaTime',
     'Is_Activo',
     'strEntFedId',
-    'entidad_id'
+    'entidad_id',
+     'unidadadministartiva',
+      'areaadministrativa',
+      'tribunal'//abrebiatura del tribunal
   ];
+    public function buscarSentenciasAvanzadas($numExpediente, $numAno, $juzgadorId, $caracteristicas)
+    {
+        // Aquí puedes construir la consulta con los parámetros recibidos
+        return $this->where('NumExpediente', $numExpediente)
+            ->where('NumAno', $numAno)
+            ->where('Juzgador_idJuzgador', $juzgadorId)
+            ->like('StrCaracteristicasEspeciales', $caracteristicas)
+            ->findAll();
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\UsuarioModel;
+use function PHPUnit\Framework\returnArgument;
 
 class Home extends BaseController
 {
@@ -23,23 +24,49 @@ class Home extends BaseController
         $usuario = $this->request->getPost('usuario'); //son los valores del campo formulario
         $password = trim($this->request->getPost('password')); //valor del campo formulario
 
-        $buscar = $this->miUsuarioModel->where('StrUsuario', $usuario)->first();
+        try {
+            $buscar = $this->miUsuarioModel->where('StrUsuario', $usuario)->first();
+            #log_message('debug', '; Contraseña verificada para el usuario ' . json_encode($buscar));
 
-        if ($buscar) {
-            if ($password == $buscar->StrPassword) {
+            if ($buscar) {
+                if ($password == $buscar->StrPassword) {
+                    log_message('debug','; Contraseña verificada para el usuario'. $usuario);
 
                 session()->set([
                     'isLoggedIn' => true,
+                    'idUsuario' => $buscar->idUsuario,
                     'nombre_usuario' => $buscar->StrUsuario,
                     'perfil_usuario' => $buscar->fkPerfil,
                 ]);
-                return redirect()->to('/sentencias/agregar');
+
+                $info = [
+                    'id' => $buscar->idUsuario,
+                    'nombre' => $buscar->StrUsuario,
+                ];
+
+                log_message('info', '; El usuario {id} como {nombre} ha iniciado sesion ', $info);
+
+               if($buscar->fkPerfil == 1){
+                   return redirect()->to('/sentencias/agregar');
+               }elseif($buscar->fkPerfil == 2){
+                   return redirect()->to(base_url('/sentencias/agregar'));
+               }else{
+                   return redirect()->to(base_url('/'))->with('error','Rol no permitido');
+               }
+                #return redirect()->to('/sentencias/agregar');
             } else {
-                return redirect()->to(base_url('/'))->with('error', 'Contraseña incorrecta');
+                    log_message('error', '; Contraseña incorrecta para el usuario' . $usuario);
+                    return redirect()->to(base_url('/'))->with('error', 'Contraseña incorrecta');
+                }
+            } else {
+                log_message('error', '; Usuario incorrecto: ' . $usuario);
+                return redirect()->to(base_url('/'))->with('error', 'Usuario no encontrado');
             }
-        } else {
-            return redirect()->to(base_url('/'))->with('error', 'Usuario no encontrado');
+        }catch (\Exception $e){
+
+            log_message('error','; Error al iniciar session para el usuario ' . $usuario . ': ' . $e->getMessage());
         }
+
     }
 
 
