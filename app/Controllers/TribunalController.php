@@ -2,35 +2,29 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-
 class TribunalController extends BaseController
 {
-    public function consultarEntidad()
+    public function consultarEntidad($entidadId)
     {
-        // Conectar a la base de datos SQL Server
         $db = \Config\Database::connect('sqlsrv');
+        $sql = "EXEC uspSARCTipoJunta @int_Operacion = ?, @entidadId = ?";
+        $query = $db->query($sql, [5, $entidadId]);
+        $result = $query->getResult();
 
-        try {
-            // Ejecutar el procedimiento almacenado con el parámetro @intOperacion = 5
-            $sql = "EXEC uspEntidad @intOperacion = ?";
-            $query = $db->query($sql, [5]);
+        return view('sentencias/new', ['entidades' => $result]);
+    }
 
-            // Obtener los resultados
-            $result = $query->getResult();
+    public function cargarTribunales($entidadId)
+    {
+        $db = \Config\Database::connect('sqlsrv');
+        $sql = "EXEC uspSARCTipoJunta @int_Operacion = ?, @entidadId = ?";
+        $query = $db->query($sql, [5, $entidadId]);
+        $tribunales = $query->getResult();
 
-            // Verificar si hay resultados
-            if (empty($result)) {
-                return redirect()->back()->with('error', 'No se encontraron entidades.');
-            }
-
-            // Pasar los resultados a la vista
-            return view('sentencias/new', ['entidades' => $result]);
-
-        } catch (\Exception $e) {
-            // Manejar errores de conexión o de consulta
-            log_message('error', 'Error al ejecutar el procedimiento almacenado: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Hubo un problema al consultar las entidades.');
-        }
+        return $this->response->setJSON($tribunales);
+    }
+    public function test()
+    {
+        return "TribunalesModel está funcionando";
     }
 }

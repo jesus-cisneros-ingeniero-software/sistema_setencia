@@ -1,36 +1,58 @@
 <?php
 namespace App\Models;
+
 use CodeIgniter\Model;
 
 class SentenciasModel extends Model
 {
-  protected $table = 'sentencias';
-  protected $primaryKey = 'idSentencia';
-  protected $allowedFields = [
-    'fkUsuario_idUsuario',
-    'Juzgador_idJuzgador',
-    'NumExpediente',
-    'NumAno',
-    'StrResumen',
-    'StrCaracteristicasEspeciales',
-    'LITIS',
-    'DtmFecha_Creacion',
-    'DtmFechaCambioTime',
-    'DtmFechaBajaTime',
-    'Is_Activo',
-    'strEntFedId',
-    'entidad_id',
-     'unidadadministartiva',
-      'areaadministrativa',
-      'tribunal'//abrebiatura del tribunal
-  ];
-    public function buscarSentenciasAvanzadas($numExpediente, $numAno, $juzgadorId, $caracteristicas)
+
+    protected $table = 'sentencias';
+    protected $primaryKey = 'idSentencia';
+    protected $allowedFields = [
+        'fkUsuario_idUsuario',
+        'Juzgador_idJuzgador',
+        'NumExpediente',
+        'NumAno',
+        'StrResumen',
+        'StrCaracteristicasEspeciales',
+        'LITIS',
+        'DtmFecha_Creacion',
+        'DtmFechaCambioTime',
+        'DtmFechaBajaTime',
+        'Is_Activo',
+        'strEntFedId',
+        'entidad_id',
+        'tribunal'
+    ];
+    protected $tribunalesModel;
+
+
+    public function __construct()
     {
-        // Aquí puedes construir la consulta con los parámetros recibidos
+        parent::__construct();
+        $this->tribunalesModel = new \App\Models\TribunalesModel(); // Asegúrate de que este modelo exista
+    }
+    public function getTribunales($entidadId)
+    {
+        try {
+            // Lógica para obtener tribunales basado en el $entidadId
+            $tribunales = $this->tribunalesModel->getTribunalesPorEntidad($entidadId);
+            echo json_encode($tribunales);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+
+
+
+
+    /*public function buscarSentenciasAvanzadas($numExpediente, $numAno, $juzgadorId, $caracteristicas)
+    {
         return $this->where('NumExpediente', $numExpediente)
             ->where('NumAno', $numAno)
             ->where('Juzgador_idJuzgador', $juzgadorId)
             ->like('StrCaracteristicasEspeciales', $caracteristicas)
             ->findAll();
-    }
+    }*/
 }

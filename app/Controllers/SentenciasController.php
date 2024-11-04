@@ -32,6 +32,7 @@ class SentenciasController extends Controller
     $data['sentencias'] = $this->sentenciasModel
         ->orderBy('DtmFecha_Creacion','DESC')->findAll();
     $data['juzgadores'] = $this->juzgadorModel->where('Is_Activo', 1)->findAll();
+    $data['entidades'] = $this->getEntidades();
     $data['usuarios'] = $this->usuarioModel->findAll();
     $data['pdfs'] = $this->pdfModel->findAll();
 
@@ -62,13 +63,68 @@ class SentenciasController extends Controller
         foreach ($entidades as $entidad) {
             if (isset($entidad['strEntFedId']) && $entidad['strEntFedId'] == $entidadId) {
                 return $entidad['strEntidad'];
-
             }
         }
-
         return 'Entidad no encontrada';
     }
+    public function getEntidades()
+    {
+        $db = \Config\Database::connect('sqlsrv');
+        $sql = "EXEC uspEntidad @intOperacion = 1"; // Solo se usa el parámetro de operación
+        $query = $db->query($sql);
 
+        return $query->getResultArray();
+    }
+    public function getTribunal()
+    {
+        $entidadId = $this->request->getPost('entidadId');
+        log_message('debug', '; Entidad Id RECIBIDO');
+        if (!$entidadId) {
+            return $this->response->setJSON(['error' => 'Entidad ID no proporcionado']);
+        }
+        $db = \Config\Database::connect('sqlsrv');
+        $sql = "EXEC uspSARCTipoJunta @int_Operacion = ?, @entidadId = ?";
+        $query = $db->query($sql, [5, $entidadId]);
+
+        $tribunales = $query->getResultArray();
+        log_message('debug', '; Tribunales: ' . print_r($tribunales, true));
+        $result = [];
+
+        foreach ($tribunales as $tribunal) {
+            // Verificar si el tribunal corresponde a la entidad seleccionada y el tipo de autoridad es válido
+            if (isset($tribunal['strEntFedId']) && $tribunal['strEntFedId'] == $entidadId  && $tribunal['numTipoAutoridadId'] >=2) {
+                $result[] = [
+                    'id' => $tribunal['strEntFedId'],
+                    'nombre' => $tribunal['strTipoJunta'] ?? 'Nombre no disponible'
+                ];
+            }
+        }
+        return $this->response->setJSON($result);
+        #return !empty($result) ? $result : 'Tribunal no encontrado';
+       # return $this->response->setJSON(!empty($result) ? $result : ['error' => 'Tribunal no encontrado']);
+    }
+    public function getConflicto($conflictoId)
+    {
+        $db = \Config\Database::connect('sqlsrv');
+        $sql = "EXEC uspTConflicto @intOperacion = ?, @intTConflictoId = ?";
+        $query = $db->query($sql, [0, $conflictoId]);
+
+        // Filtrar el resultado para encontrar la entidad específica
+        $conflictos = $query->getResultArray();
+        foreach ($conflictos as $conflicto) {
+            if (isset($conflicto['intTConflictoId']) && $conflicto['intTConflictoId'] == $conflictoId) {
+                return $conflicto;
+            }
+        }
+        return 'Conflicto no encontrada';
+    }
+
+    public function mostrarConflicto($conflictoId)
+    {
+        $data['conflicto'] = $this->getConflicto($conflictoId);
+
+        return view('sentencias/ver_conflicto', $data);
+    }
 
 
     public function agregar()
@@ -202,6 +258,28 @@ class SentenciasController extends Controller
 
     }
 
+    public function buscarJuzgador()
+    {
+        $term = $this->request->getGet('term'); // Obtener el término de búsqueda desde la solicitud GET
+        $juzgadorModel = new JuzgadorModel();
+
+        // Buscar juzgadores que coincidan con el término de búsqueda
+        $juzgadores = $juzgadorModel->like('StrNombre', $term)
+            ->orLike('StrApellidoPaterno', $term)
+            ->orLike('StrApellidoMaterno', $term)
+            ->where('Is_Activo', 1)
+            ->findAll(10); // Limitar los resultados a 10
+
+        $result = [];
+        foreach ($juzgadores as $juzgador) {
+            $result[] = [
+                'id' => $juzgador['idJuzagador'],
+                'label' => $juzgador['StrNombre'] . ' ' . $juzgador['StrApellidoPaterno'] . ' ' . $juzgador['StrApellidoMaterno']
+            ];
+        }
+
+        return $this->response->setJSON($result); // Devolver los resultados en formato JSON
+    }
 
 
 
@@ -265,11 +343,12 @@ class SentenciasController extends Controller
         $StrCaracteristicasEspeciales = $this->request->getPost('StrCaracteristicasEspeciales');
 
         // Construir la consulta avanzada
-        $query = $sentenciasModel->select('sentencias.*, juzgador.StrNombre AS juzgador_nombre, 
+        $query = $sentenciasModel->select('sentencias.*, 
+                                       juzgador.StrNombre AS juzgador_nombre, 
                                        juzgador.StrApellidoPaterno AS juzgador_apellido_paterno, 
                                        juzgador.StrApellidoMaterno AS juzgador_apellido_materno, 
                                        pdfs.file_name, pdfs.file_path')
-            ->join('juzgador', 'sentencias.Juzgador_idJuzgador = juzgador.idJuzgador')
+            ->join('juzgador', 'sentencias.Juzgador_idJuzgador = juzgador.idJuzgador', 'left')
             ->join('pdfs', 'sentencias.pdf_id = pdfs.idpdfs', 'left')
             ->where('sentencias.Is_Activo', 1);
 
@@ -283,19 +362,18 @@ class SentenciasController extends Controller
         }
 
         if (!empty($Juzgador_idJuzgador)) {
-            $query->where('sentencias.Juzgador_idJuzgador', $Juzgador_idJuzgador);
+            $query->where('Juzgador_idJuzgador', $Juzgador_idJuzgador);
         }
 
         if (!empty($StrCaracteristicasEspeciales)) {
             $query->like('StrCaracteristicasEspeciales', $StrCaracteristicasEspeciales);
         }
 
-        // Obtener los resultados y datos del juzgador
+        // Ejecutar la consulta y obtener los resultados
         $data['resultados'] = $query->findAll();
         $data['juzgadores'] = $juzgadorModel->where('Is_Activo', 1)->findAll();
 
-        // Cargar la vista con los resultados de la búsqueda avanzada
-        return view('sentencias/advanced_search', $data);
+        return view('sentencias/index', $data);
     }
 
     public function performAdvancedSearch()

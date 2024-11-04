@@ -85,10 +85,9 @@ $routes->get('/consultarentidad', 'EntidadController::consultarEntidad');
 
 
 $routes->get('/pdfs/view/(:segment)', 'PDFController::view/$1');
-
-
-
-
+$routes->post('sentencias/getTribunal', 'SentenciasController::getTribunal');
+$routes->post('sentencias/getConflicto', 'SentenciasController::getConflicto');
 
 $routes->get('pdf/(:segment)', 'SentenciasController::verPDF/$1');
 $routes->get('pdf/(:any)', 'SentenciasController::verPdffinal/$1');
+$routes->get('sentencias/buscarJuzgador', 'SentenciasController::buscarJuzgador');
