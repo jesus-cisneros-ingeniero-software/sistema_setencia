@@ -103,11 +103,33 @@ class SentenciasController extends Controller
         #return !empty($result) ? $result : 'Tribunal no encontrado';
        # return $this->response->setJSON(!empty($result) ? $result : ['error' => 'Tribunal no encontrado']);
     }
-    public function getConflicto($conflictoId)
+    public function getConflictos( )
     {
         $db = \Config\Database::connect('sqlsrv');
-        $sql = "EXEC uspTConflicto @intOperacion = ?, @intTConflictoId = ?";
-        $query = $db->query($sql, [0, $conflictoId]);
+        $sql = "EXEC uspConflicto @iAccion = ?";
+        $query = $db->query($sql, [4]);
+
+        // Filtrar el resultado para encontrar la entidad específica
+        $conflictos = $query->getResultArray();
+
+       /*foreach ($conflictos as $conflicto) {
+            if (isset($conflicto['strConflictoId']) && $conflicto['strConflictoId'] == $conflictoId) {
+                return $conflicto['strConflicto'];
+
+            }
+        }*/
+        if (!empty($conflictos)){
+            return  $this->response->setJSON($conflictos);
+        }
+        //return 'Conflicto no encontrado';
+        return $this->response->setJSON(['error' => 'No se encontraron conflictos']);
+    }
+    /*
+    public function getTConflicto($tconflictoId)
+    {
+        $db = \Config\Database::connect('sqlsrv');
+        $sql = "EXEC uspTConflicto @iAccion = ?, @strConflictoId = ?";
+        $query = $db->query($sql, [0, $tconflictoId]);
 
         // Filtrar el resultado para encontrar la entidad específica
         $conflictos = $query->getResultArray();
@@ -117,7 +139,7 @@ class SentenciasController extends Controller
             }
         }
         return 'Conflicto no encontrada';
-    }
+    }*/
 
     public function mostrarConflicto($conflictoId)
     {

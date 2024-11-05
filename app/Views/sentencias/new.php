@@ -258,7 +258,7 @@
     <form action="<?= base_url('sentencias/save'); ?>" method="POST" enctype="multipart/form-data">
 
 
-        <div class="fom-group">
+        <div class="form-group">
         <?php if (!empty($entidades)): ?>
 
             <label for="entidad_id">Entidades:</label>
@@ -337,7 +337,7 @@
         <div class="form-group">
             <button type="submit" class="boton">Guardar Sentencia</button>
         </div>
-    </form>JuzgadorModel.php
+    </form>
 </div>
 
 <!-- Modal para agregar nuevo juzgador -->
@@ -401,13 +401,13 @@
         // Función para cargar los conflictos basados en el tribunal seleccionado
         function cargarConflictos() {
                 $.ajax({
-                    url: '<?= base_url('sentencias/getConflicto'); ?>',
-                    type: 'POST',
-                    data: { conflictoId: 0 },
+                    url: '<?= base_url('sentencias/getConflictos'); ?>',
+                    type: 'GET',
+
                     success: function(response) {
                         let options = '<option value="">Seleccione un conflicto</option>';
                         response.forEach(function(conflicto) {
-                            options += `<option value="${conflicto.intTConflictoId}">${conflicto.descripcion || 'Descripción no disponible'}</option>`;
+                            options += `<option value="${conflicto.strConflictoId}">${conflicto.strConflicto }</option>`;
                         });
                         $('#conflicto').html(options);
                     },
@@ -422,13 +422,14 @@
         const entidadDefault = '1';
         cargarTribunales(entidadDefault);
         // Cargar conflictos al cargar la página
-        cargarConflictos();
+        //cargarConflictos();
 
         // Cambiar tribunales cuando el usuario selecciona una nueva entidad
         $('#entidad_id').change(function() {
             const entidadId = $(this).val();
             cargarTribunales(entidadId);
         });
+        cargarConflictos();
 
     });
 
