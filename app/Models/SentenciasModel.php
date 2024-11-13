@@ -14,15 +14,15 @@ class SentenciasModel extends Model
         'NumExpediente',
         'NumAno',
         'StrResumen',
-        'StrCaracteristicasEspeciales',
         'LITIS',
         'DtmFecha_Creacion',
         'DtmFechaCambioTime',
         'DtmFechaBajaTime',
         'Is_Activo',
-        'strEntFedId',
         'entidad_id',
-        'tribunal'
+        'Tribunales',
+        'pdf_id',
+        'conflicto'
     ];
     protected $tribunalesModel;
 

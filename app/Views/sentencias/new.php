@@ -33,136 +33,76 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 <script>
-    $(document).ready(function() {
-        $("#juzgador-autocomplete").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: "<?= base_url('sentencias/buscarJuzgador') ?>",
-                    dataType: "json",
-                    data: {
-                        term: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 2, // Mínimo de caracteres para activar el autocompletado
-            select: function(event, ui) {
-                $("#juzgador-autocomplete").val(ui.item.label); // Mostrar el nombre completo
-                $("#juzgador-id").val(ui.item.id); // Guardar el ID del juzgador
-                return false;
-            }
-        });
-    });
-</script>
-
-<!--<script>
-    function cargarTribunales() {
-        const entidadId = document.getElementById('entidadSelect').value;
-        const tribunalSelect = document.getElementById('tribunalSelect');
-
-        // Limpiar las opciones previas
-        tribunalSelect.innerHTML = '<option value="">Selecciona un tribunal</option>';
-
-        if (entidadId) {
-            fetch(`<?= base_url('ruta_a_tu_controlador/getTribunales') ?>/${entidadId}`)
-                .then(response => response.json())
-                .then(data => {
-
-
-                    
-                    data.forEach(tribunal => {
-                        tribunalSelect.innerHTML += `<option value="${tribunal.id}">${tribunal.nombre}</option>`;
-                    });
-                })
-                .catch(error => console.error('Error al cargar los tribunales:', error));
-        }
-    }
-</script>-->
-
-
-<body background="<?= base_url('/assets/img/fondoprop.png') ?>">
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Array de juzgadores obtenido del servidor
         var juzgadores = [
-        <?php foreach ($juzgadores as $juzgador): ?>
-    {
-        label: "<?= $juzgador['StrNombre'] . ' ' . $juzgador['StrApellidoPaterno'] . ' ' . $juzgador['StrApellidoMaterno'] ?>",
-        value: <?= $juzgador['idJuzgador'] ?>
-    },
-        <?php endforeach; ?>
+            <?php foreach ($juzgadores as $juzgador): ?>
+            {
+                label: "<?= $juzgador['StrNombre'] . ' ' . $juzgador['StrApellidoPaterno'] . ' ' . $juzgador['StrApellidoMaterno'] ?>",
+                value: <?= $juzgador['idJuzgador'] ?>
+            },
+            <?php endforeach; ?>
         ];
 
+        // Función de autocompletado
         document.getElementById('juzgador_autocomplete').addEventListener('input', function () {
-        var input = this.value.toLowerCase();
-        var suggestions = juzgadores.filter(function(juzgador) {
-        return juzgador.label.toLowerCase().includes(input);
-    });
+            var input = this.value.toLowerCase();
+            var suggestions = juzgadores.filter(function(juzgador) {
+                return juzgador.label.toLowerCase().includes(input);
+            });
 
-        // Mostrar las sugerencias en el contenedor
-        var suggestionsContainer = document.querySelector('.suggestions-container');
-        var suggestionList = suggestionsContainer.querySelector('#suggestion-list');
-        suggestionList.innerHTML = ''; // Limpiar sugerencias
+            var suggestionsContainer = document.querySelector('.suggestions-container');
+            var suggestionList = suggestionsContainer.querySelector('#suggestion-list');
+            suggestionList.innerHTML = '';
 
-        if (suggestions.length > 0) {
-        suggestions.forEach(function(sug) {
-        var suggestionItem = document.createElement('div');
-        suggestionItem.textContent = sug.label;
-        suggestionItem.dataset.value = sug.value; // Guarda el id del juzgador
-        suggestionItem.classList.add('suggestion-item');
+            if (suggestions.length > 0) {
+                suggestions.forEach(function(sug) {
+                    var suggestionItem = document.createElement('div');
+                    suggestionItem.textContent = sug.label;
+                    suggestionItem.dataset.value = sug.value;
+                    suggestionItem.classList.add('suggestion-item');
 
-        suggestionItem.addEventListener('click', function() {
-        document.getElementById('juzgador_autocomplete').value = this.textContent;
-        document.getElementById('Juzgador_idJuzgador').value = this.dataset.value;
-        suggestionsContainer.style.display = 'none'; // Ocultar sugerencias
-    });
+                    suggestionItem.addEventListener('click', function() {
+                        document.getElementById('juzgador_autocomplete').value = this.textContent;
+                        document.getElementById('Juzgador_idJuzgador').value = this.dataset.value;
+                        suggestionsContainer.style.display = 'none';
+                    });
 
-        suggestionList.appendChild(suggestionItem);
-    });
+                    suggestionList.appendChild(suggestionItem);
+                });
+                suggestionsContainer.style.display = 'block';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
 
-        // Mostrar el contenedor de sugerencias
-        suggestionsContainer.style.display = 'block';
-    } else {
-        suggestionsContainer.style.display = 'none'; // Cerrar si no hay sugerencias
-    }
-    });
-
-        // Cerrar las sugerencias cuando el usuario hace clic en otro lugar
+        // Ocultar sugerencias si se hace clic fuera
         document.addEventListener('click', function(e) {
-        if (!document.getElementById('juzgador_autocomplete').contains(e.target)) {
-        document.querySelector('.suggestions-container').style.display = 'none'; // Cerrar sugerencias si se hace clic fuera
-    }
-    });
-    });
+            if (!document.getElementById('juzgador_autocomplete').contains(e.target)) {
+                document.querySelector('.suggestions-container').style.display = 'none';
+            }
+        });
 
-
-        document.addEventListener('DOMContentLoaded', function () {
-        // Guardar nuevo juzgador mediante fetch
+        // Guardar nuevo juzgador
         document.getElementById('guardarJuzgador').addEventListener('click', function (event) {
-            event.preventDefault(); // Prevenir el comportamiento por defecto del botón
+            event.preventDefault();
 
             var nombre = document.getElementById('nuevo_juzgador_nombre').value.trim();
             var apellidoP = document.getElementById('StrApellidoPaterno').value.trim();
             var apellidoM = document.getElementById('StrApellidoMaterno').value.trim();
 
-            // Verifica que el nombre y apellido paterno estén completos
             if (!nombre || !apellidoP) {
                 alert('Por favor complete los campos requeridos (Nombre y Apellido Paterno).');
-                return; // Detiene la ejecución si falta información
+                return;
             }
 
-            // Crear objeto con los datos a enviar
             var data = {
                 StrNombre: nombre,
                 StrApellidoPaterno: apellidoP,
                 StrApellidoMaterno: apellidoM
             };
 
-            // Enviar los datos al servidor utilizando fetch
-            fetch("<?= base_url('sentencias/saveJuzgador') ?>", {  // Ruta ajustada para guardar juzgador
+            fetch("<?= base_url('sentencias/saveJuzgador') ?>", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -170,87 +110,33 @@
                 body: JSON.stringify(data)
             })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                    return response.json(); // Parsear la respuesta JSON
+                    if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                    return response.json();
                 })
                 .then(responseData => {
-                    // Actualizar el formulario principal con los datos del nuevo juzgador
                     document.getElementById('juzgador_autocomplete').value = nombre + ' ' + apellidoP + ' ' + apellidoM;
-                    document.getElementById('Juzgador_idJuzgador').value = responseData.idJuzgador; // Asigna el ID del juzgador recién creado
-                    document.querySelector('.suggestions-container').style.display = 'none'; // Ocultar sugerencias
+                    document.getElementById('Juzgador_idJuzgador').value = responseData.idJuzgador;
 
-                    // Cerrar el modal
-                    var modalElement = document.querySelector('#nuevoJuzgadorModal');
-                    var modal = bootstrap.Modal.getInstance(modalElement); // Obtener instancia de modal
-                    modal.hide(); // Cerrar modal
+                    var modal = bootstrap.Modal.getInstance(document.querySelector('#nuevoJuzgadorModal'));
+                    modal.hide();
 
-                    // Limpiar campos del modal
                     document.getElementById('nuevo_juzgador_nombre').value = '';
                     document.getElementById('StrApellidoPaterno').value = '';
                     document.getElementById('StrApellidoMaterno').value = '';
                 })
-                .catch(error => {
-                    alert('Hubo un error al guardar el juzgador: ' + error);
-                });
+                .catch(error => alert('Hubo un error al guardar el juzgador: ' + error));
         });
-
-        // Autocomplete para juzgadores (ya lo tienes implementado)
-        var juzgadores = [
-        <?php foreach ($juzgadores as $juzgador): ?>
-    {
-        label: "<?= $juzgador['StrNombre'] . ' ' . $juzgador['StrApellidoPaterno'] . ' ' . $juzgador['StrApellidoMaterno'] ?>",
-        value: <?= $juzgador['idJuzgador'] ?>
-    },
-        <?php endforeach; ?>
-        ];
-
-        document.getElementById('juzgador_autocomplete').addEventListener('input', function () {
-        var input = this.value.toLowerCase();
-        var suggestions = juzgadores.filter(function(juzgador) {
-        return juzgador.label.toLowerCase().includes(input);
     });
 
-        // Mostrar las sugerencias en el contenedor
-        var suggestionsContainer = document.querySelector('.suggestions-container');
-        var suggestionList = suggestionsContainer.querySelector('#suggestion-list');
-        suggestionList.innerHTML = ''; // Limpiar sugerencias
-
-        if (suggestions.length > 0) {
-        suggestions.forEach(function(sug) {
-        var suggestionItem = document.createElement('div');
-        suggestionItem.textContent = sug.label;
-        suggestionItem.dataset.value = sug.value; // Guarda el id del juzgador
-        suggestionItem.classList.add('suggestion-item');
-
-        suggestionItem.addEventListener('click', function() {
-        document.getElementById('juzgador_autocomplete').value = this.textContent;
-        document.getElementById('Juzgador_idJuzgador').value = this.dataset.value;
-        suggestionsContainer.style.display = 'none'; // Ocultar sugerencias
-    });
-
-        suggestionList.appendChild(suggestionItem);
-    });
-
-        // Mostrar el contenedor de sugerencias
-        suggestionsContainer.style.display = 'block';
-    } else {
-        suggestionsContainer.style.display = 'none'; // Cerrar si no hay sugerencias
-    }
-    });
-
-        // Cerrar las sugerencias cuando el usuario hace clic en otro lugar
-        document.addEventListener('click', function(e) {
-        if (!document.getElementById('juzgador_autocomplete').contains(e.target)) {
-        document.querySelector('.suggestions-container').style.display = 'none'; // Cerrar sugerencias si se hace clic fuera
-    }
-    });
-    });
 </script>
 
+<body background="<?= base_url('/assets/img/fondoprop.png') ?>">
 
 
+
+
+<input type="text" id="juzgador-autocomplete" name="Juzgador_idJuzgador" />
+<input type="hidden" id="juzgador-id" name="Juzgador_idJuzgador" />
 
 
 <div class="container" style="position: relative;"> <!-- Hacer contenedor relativo para posicionar sugerencias -->
@@ -273,15 +159,22 @@
       <p>No se encontraron entidades.</p>
     <?php endif; ?>
         </div>
-
+        <!--aGREGAMOS EL CAMPO TRIBUNALES-->
         <div class="fom-group">
             <label for="Tribunales">Tribunal:</label>
             <select name="Tribunales" id="Tribunales" class="form-control" required>
                 <option value="">Seleccione un tribunal</option>
             </select>
         </div>
+        <!-- Campo para cargar el conflicto -->
+        <div class="form-group">
+            <label for="conflicto">Conflicto:</label>
+            <select name="conflicto" id="conflicto" class="form-control">
+                <option value="">Seleccione un conflicto</option>
+            </select>
+        </div>
 
-        <!--aGREGAMOS EL CAMPO TRIBUNALES-->
+
 
         <div class="fom-group">
             <label for="NumExpediente">Número de Expediente:</label>
@@ -311,21 +204,9 @@
 </button>
         </div>
 
-        <!-- Otros campos del formulario -->
-        <div class="form-group">
-            <label for="StrDescripcion">Agregar nueva Sentencia (si no está en la lista):</label>
-            <input type="text" name="StrDescripcion" id="StrDescripcion" class="form-control" placeholder="Descripción de la nueva sentencia" autocomplete="off">
-        </div>
         <div class="form-group">
             <label for="LITIS">LITIS:</label>
             <textarea name="LITIS" class="form-control" autocomplete="off" required></textarea>
-        </div>
-        <!-- Campo para cargar el conflicto -->
-        <div class="form-group">
-            <label for="conflicto">Conflicto:</label>
-            <select name="conflicto" id="conflicto" class="form-control">
-                <option value="">Seleccione un conflicto</option>
-            </select>
         </div>
 
 
@@ -383,7 +264,7 @@
                     success: function(response) {
                         let options = '<option value="">Seleccione un tribunal</option>';
                         response.forEach(function(tribunal) {
-                            options += `<option value="${tribunal.id}">${tribunal.nombre}</option>`;
+                            options += `<option value="${tribunal.nombre}">${tribunal.nombre}</option>`;
                         });
                         $('#Tribunales').html(options);
                     },

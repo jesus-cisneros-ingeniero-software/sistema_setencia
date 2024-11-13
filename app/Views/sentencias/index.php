@@ -87,7 +87,7 @@
           <tr>
             <td><?= $sentencia['NumExpediente'] ?></td>
             <td><?= $sentencia['NumAno'] ?></td>
-              <td><?= $sentencia['tribunal'] ?></td>
+              <td><?= $sentencia['Tribunales'] ?></td>
             <td><?= $sentencia['StrResumen'] ?></td>
               <td>
                   <?=

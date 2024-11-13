@@ -5,6 +5,7 @@ use App\Models\JuzgadorModel;
 use App\Models\UsuarioModel;
 use CodeIgniter\Controller;
 use App\Models\PDFModel;
+
 class SentenciasController extends Controller
 {
     protected $session;
@@ -124,22 +125,6 @@ class SentenciasController extends Controller
         //return 'Conflicto no encontrado';
         return $this->response->setJSON(['error' => 'No se encontraron conflictos']);
     }
-    /*
-    public function getTConflicto($tconflictoId)
-    {
-        $db = \Config\Database::connect('sqlsrv');
-        $sql = "EXEC uspTConflicto @iAccion = ?, @strConflictoId = ?";
-        $query = $db->query($sql, [0, $tconflictoId]);
-
-        // Filtrar el resultado para encontrar la entidad específica
-        $conflictos = $query->getResultArray();
-        foreach ($conflictos as $conflicto) {
-            if (isset($conflicto['intTConflictoId']) && $conflicto['intTConflictoId'] == $conflictoId) {
-                return $conflicto;
-            }
-        }
-        return 'Conflicto no encontrada';
-    }*/
 
     public function mostrarConflicto($conflictoId)
     {
@@ -155,6 +140,7 @@ class SentenciasController extends Controller
     $sentenciasModel = new SentenciasModel(); // Añadir esto para obtener las sentencias
     $data['sentencias'] = $sentenciasModel->where('Is_Activo', 1)->findAll();
     $data['juzgadores'] = $juzgadorModel->where('Is_Activo', 1)->findAll();
+
     // Aquí debes cargar las entidades antes de pasar los datos a la vista
     $db = \Config\Database::connect('sqlsrv');
     $sql = "EXEC uspEntidad @intOperacion = ?";
@@ -193,11 +179,12 @@ class SentenciasController extends Controller
             'StrNombre' => 'permit_empty',
             'StrApellidoPaterno' => 'permit_empty',
             'StrApellidoMaterno' => 'permit_empty',
-            'unidadadministartiva'=> 'required',
-            'areaadministrativa'=> 'required',
-            'tribunal' => 'required'
+            'Tribunales' => 'required',
+            'conflicto' => 'required'
 
         ]);
+        // Obtener el nombre del tribunal (ya no es el ID)
+        $tribunalNombre = $this->request->getPost('Tribunales');
 
         if (!$validation->withRequest($this->request)->run()) {
             log_message('error', 'Error en validación: ' . json_encode($validation->getErrors()));
@@ -208,7 +195,7 @@ class SentenciasController extends Controller
 
         $sentenciaData = [
             'fkUsuario_idUsuario' => 1,
-            'Juzgador_idJuzgador' => $this->request->getPost('Juzgador_idJuzgador'),
+            'Juzgador_idJuzgador' => $this->request->getPost('juzgador_autocomplete') ?? 0, // Asegúrate de que el ID sea correcto
             'NumExpediente' => $this->request->getPost('NumExpediente'),
             'NumAno' => $this->request->getPost('NumAno'),
             'StrResumen' => $this->request->getPost('StrResumen'),
@@ -216,10 +203,10 @@ class SentenciasController extends Controller
             'LITIS' => $this->request->getPost('LITIS'),
             'DtmFecha_Creacion' => date('Y-m-d H:i:s'),
             'Is_Activo' => 1,
-            'entidad_id' => $this->request->getPost('entidad_id'),
-            'unidadadministartiva' => $this->request->getPost('unidadadministartiva'), // Debe ser un número
-            'areaadministrativa' => $this->request->getPost('areaadministrativa'),      // Cadena válida
-            'tribunal' => $this->request->getPost('tribunal')
+            'entidad_id' => $this->request->getPost('entidad_id'),      // Cadena válida
+            //'Tribunales' => $this->request->getPost('Tribunales'),
+            'Tribunales' => $tribunalNombre,
+            'conflicto' => $this->request->getPost('conflicto')
 
         ];
 
